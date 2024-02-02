@@ -13,3 +13,9 @@ append (Vector x) (Vector y) = Vector (x ++ y)
 instance Num a => Num (Vector n a) where
     (+) (Vector x) (Vector y) = Vector (zipWith (+) x y)
     (-) (Vector x) (Vector y) = Vector (zipWith (-) x y)
+
+dot :: Num a => Vector n a -> Vector n a -> a
+dot (Vector x) (Vector y) = sum $ zipWith (*) x y
+
+norm :: Vector n Float -> Float
+norm x = sqrt $ dot x x
