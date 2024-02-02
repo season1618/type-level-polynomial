@@ -8,7 +8,6 @@ copyright:           "2024 Author name here"
 
 extra-source-files:
 - README.md
-- CHANGELOG.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -21,7 +20,6 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
-- containers >= 0.6.7
 
 ghc-options:
 - -Wall
