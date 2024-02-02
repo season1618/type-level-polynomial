@@ -7,6 +7,7 @@
 module TypeLevelPolynomial (
     List(Nil, Cons),
     Polynomial(Polynomial),
+    Add,
 ) where
 
 import GHC.TypeLits
