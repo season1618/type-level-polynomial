@@ -2,6 +2,7 @@
 
 import TypeLevelPolynomial
 import Vector
+import Matrix
 
 main :: IO ()
 main = do
@@ -12,3 +13,8 @@ main = do
     print $ x - x
     print $ x `dot` x
     print $ norm x
+
+    let a = Matrix [[1, 2, 3], [2, 3, 4]] :: Matrix ('Polynomial ('Cons "a" 'Nil)) ('Polynomial ('Cons "b" 'Nil)) Float
+    let b = Matrix [[1, 2], [2, 3], [3, 4]] :: Matrix ('Polynomial ('Cons "b" 'Nil)) ('Polynomial ('Cons "a" 'Nil)) Float
+    print $ a + a
+    print $ b + b
