@@ -7,6 +7,12 @@ import TypeLevelPolynomial
 data Matrix (n :: Polynomial) (m :: Polynomial) a = Matrix [[a]]
     deriving (Eq, Show)
 
+appendRow :: Matrix n1 m a -> Matrix n2 m a -> Matrix (Add n1 n2) m a
+appendRow (Matrix x) (Matrix y) = Matrix (x ++ y)
+
+appendCol :: Matrix n m1 a -> Matrix n m2 a -> Matrix n (Add m1 m2) a
+appendCol (Matrix x) (Matrix y) = Matrix [xi ++ yi | (xi, yi) <- zip x y]
+
 instance Num a => Num (Matrix n m a) where
     (+) (Matrix x) (Matrix y) = Matrix (zipWith (zipWith (+)) x y)
     (-) (Matrix x) (Matrix y) = Matrix (zipWith (zipWith (-)) x y)
