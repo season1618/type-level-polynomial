@@ -10,5 +10,6 @@ data Vector (n :: Polynomial) a = Vector [a]
 append :: Vector n a -> Vector m a -> Vector (Add n m) a
 append (Vector x) (Vector y) = Vector (x ++ y)
 
-add :: Num a => Vector n a -> Vector n a -> Vector n a
-add (Vector x) (Vector y) = Vector (zipWith (+) x y)
+instance Num a => Num (Vector n a) where
+    (+) (Vector x) (Vector y) = Vector (zipWith (+) x y)
+    (-) (Vector x) (Vector y) = Vector (zipWith (-) x y)
