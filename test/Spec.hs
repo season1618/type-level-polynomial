@@ -18,3 +18,5 @@ main = do
     let b = Matrix [[1, 2], [2, 3], [3, 4]] :: Matrix ('Polynomial ('Cons "b" 'Nil)) ('Polynomial ('Cons "a" 'Nil)) Float
     print $ a + a
     print $ b + b
+    print $ mul a b
+    print $ mul b a
