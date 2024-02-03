@@ -12,7 +12,7 @@ data Matrix (n :: Polynomial) (m :: Polynomial) a = Matrix [[a]]
 rowVector :: Vector n a -> Matrix One n a
 rowVector (Vector v) = Matrix [v]
 
-colVector :: Vector n a -> Matrix n ('Polynomial '[ '("1", 'Pos 1) ]) a
+colVector :: Vector n a -> Matrix n One a
 colVector (Vector v) = Matrix [[vi] | vi <- v]
 
 appendRow :: Matrix m1 n a -> Matrix m2 n a -> Matrix (Add m1 m2) n a
@@ -21,11 +21,11 @@ appendRow (Matrix x) (Matrix y) = Matrix (x ++ y)
 appendCol :: Matrix m n1 a -> Matrix m n2 a -> Matrix m (Add n1 n2) a
 appendCol (Matrix x) (Matrix y) = Matrix [xi ++ yi | (xi, yi) <- zip x y]
 
-unconsRow :: Matrix m n a -> Maybe (Vector n a, Matrix (Add m ('Polynomial '[ '("1", 'Neg 1) ])) n a)
+unconsRow :: Matrix m n a -> Maybe (Vector n a, Matrix (Add m NegOne) n a)
 unconsRow (Matrix []) = Nothing
 unconsRow (Matrix (x:xs)) = Just (Vector x, Matrix xs)
 
-unconsCol :: Matrix m n a -> Maybe (Vector m a, Matrix m (Add n ('Polynomial '[ '("1", 'Neg 1) ])) a)
+unconsCol :: Matrix m n a -> Maybe (Vector m a, Matrix m (Add n NegOne) a)
 unconsCol (Matrix []) = Nothing
 unconsCol (Matrix m) = Just (Vector [x | x:_ <- m], Matrix [xs | _:xs <- m])
 

@@ -9,6 +9,7 @@ module TypeLevelPolynomial (
     Zahl(Pos, Zero, Neg),
     Polynomial(Polynomial),
     One,
+    NegOne,
     Add,
 ) where
 
@@ -34,6 +35,7 @@ type family CmpAddZahl (c :: Ordering) (x :: Nat) (y :: Nat) :: Zahl where
 data Polynomial = Polynomial [(Symbol, Zahl)]
 
 type One = 'Polynomial '[ '("1", 'Pos 1) ]
+type NegOne = 'Polynomial '[ '("1", 'Neg 1) ]
 
 type family Add (x :: Polynomial) (y :: Polynomial) :: Polynomial where
     Add ('Polynomial x) ('Polynomial y) = 'Polynomial (AddList x y)

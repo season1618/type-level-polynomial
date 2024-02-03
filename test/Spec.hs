@@ -17,7 +17,7 @@ main = do
     let y = Vector [2, 3, 4] :: Vector ('Polynomial '[ '("b", 'Pos 1) ]) Float
     let Just (xa, xv) = Vec.uncons x
     print $ append x y == append y x
-    print $ append (Vector [xa] :: Vector ('Polynomial '[ '("1", 'Pos 1) ]) Float) xv == x
+    print $ append (scalar xa) xv == x
     print $ x + x
     print $ x - x
     print $ x `dot` x

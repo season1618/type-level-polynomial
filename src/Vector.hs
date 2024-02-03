@@ -14,7 +14,7 @@ scalar a = Vector [a]
 append :: Vector m a -> Vector n a -> Vector (Add m n) a
 append (Vector x) (Vector y) = Vector (x ++ y)
 
-uncons :: Vector n a -> Maybe (a, Vector (Add n ('Polynomial '[ '("1", 'Neg 1) ])) a)
+uncons :: Vector n a -> Maybe (a, Vector (Add n NegOne) a)
 uncons (Vector []) = Nothing
 uncons (Vector (x:xs)) = Just (x, Vector xs)
 
