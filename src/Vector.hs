@@ -8,7 +8,7 @@ import TypeLevelPolynomial
 data Vector (n :: Polynomial) a = Vector [a]
     deriving (Eq, Show)
 
-append :: Vector n a -> Vector m a -> Vector (Add n m) a
+append :: Vector m a -> Vector n a -> Vector (Add m n) a
 append (Vector x) (Vector y) = Vector (x ++ y)
 
 uncons :: Vector n a -> Maybe (a, Vector (Add n ('Polynomial '[ '("1", 'Neg 1) ])) a)

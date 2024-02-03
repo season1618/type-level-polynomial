@@ -9,17 +9,17 @@ import Vector
 data Matrix (n :: Polynomial) (m :: Polynomial) a = Matrix [[a]]
     deriving (Eq, Show)
 
-appendRow :: Matrix n1 m a -> Matrix n2 m a -> Matrix (Add n1 n2) m a
+appendRow :: Matrix m1 n a -> Matrix m2 n a -> Matrix (Add m1 m2) n a
 appendRow (Matrix x) (Matrix y) = Matrix (x ++ y)
 
-appendCol :: Matrix n m1 a -> Matrix n m2 a -> Matrix n (Add m1 m2) a
+appendCol :: Matrix m n1 a -> Matrix m n2 a -> Matrix m (Add n1 n2) a
 appendCol (Matrix x) (Matrix y) = Matrix [xi ++ yi | (xi, yi) <- zip x y]
 
 uncons :: Matrix m n a -> Maybe (Vector n a, Matrix (Add m ('Polynomial '[ '("1", 'Neg 1) ])) n a)
 uncons (Matrix []) = Nothing
 uncons (Matrix (x:xs)) = Just (Vector x, Matrix xs)
 
-instance Num a => Num (Matrix n m a) where
+instance Num a => Num (Matrix m n a) where
     (+) (Matrix x) (Matrix y) = Matrix (zipWith (zipWith (+)) x y)
     (-) (Matrix x) (Matrix y) = Matrix (zipWith (zipWith (-)) x y)
 
