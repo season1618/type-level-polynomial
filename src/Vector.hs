@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE KindSignatures #-}
 
 module Vector where
@@ -9,6 +10,10 @@ data Vector (n :: Polynomial) a = Vector [a]
 
 append :: Vector n a -> Vector m a -> Vector (Add n m) a
 append (Vector x) (Vector y) = Vector (x ++ y)
+
+uncons :: Vector n a -> Maybe (a, Vector (Add n ('Polynomial '[ '("1", 'Neg 1) ])) a)
+uncons (Vector []) = Nothing
+uncons (Vector (x:xs)) = Just (x, Vector xs)
 
 instance Num a => Num (Vector n a) where
     (+) (Vector x) (Vector y) = Vector (zipWith (+) x y)
