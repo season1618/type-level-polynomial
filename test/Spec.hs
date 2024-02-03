@@ -25,13 +25,18 @@ main = do
 
     let a = Matrix [[1, 2, 3], [2, 3, 4]] :: Matrix ('Polynomial '[ '("a", 'Pos 1) ]) ('Polynomial '[ '("b", 'Pos 1) ]) Float
     let b = Matrix [[1, 2], [2, 3], [3, 4]] :: Matrix ('Polynomial '[ '("b", 'Pos 1) ]) ('Polynomial '[ '("a", 'Pos 1) ]) Float
-    let Just (av, am) = Mat.uncons a
+    let Just (av, am) = Mat.unconsRow a
     print $ y == av
-    print $ mul am b
+    print $ Mat.mul am b
     print $ appendRow a a
     print $ appendCol a a
     print $ transpose a == b
     print $ a + a
     print $ b + b
-    print $ mul a b
-    print $ mul b a
+    print $ Mat.mul a b
+    print $ Mat.mul b a
+
+    let a = Matrix [ [8, 16, 24, 32], [2,  7, 12, 17], [6, 17, 32, 59], [7, 22, 46, 105] ] :: Matrix ('Polynomial '[ '("1", 'Pos 4) ]) ('Polynomial '[ '("1", 'Pos 4) ]) Float
+    let (l, u) = luDecomp a
+    print l
+    print u
