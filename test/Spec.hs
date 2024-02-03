@@ -15,7 +15,9 @@ main = do
 
     let x = Vector [1, 2, 3] :: Vector ('Polynomial '[ '("a", 'Pos 1) ]) Float
     let y = Vector [2, 3, 4] :: Vector ('Polynomial '[ '("b", 'Pos 1) ]) Float
+    let Just (xa, xv) = Vec.uncons x
     print $ append x y == append y x
+    print $ append (Vector [xa] :: Vector ('Polynomial '[ '("1", 'Pos 1) ]) Float) xv == x
     print $ x + x
     print $ x - x
     print $ x `dot` x
@@ -28,6 +30,7 @@ main = do
     print $ mul am b
     print $ appendRow a a
     print $ appendCol a a
+    print $ transpose a == b
     print $ a + a
     print $ b + b
     print $ mul a b
