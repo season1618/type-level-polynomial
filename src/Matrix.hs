@@ -26,8 +26,18 @@ unconsRow (Matrix []) = Nothing
 unconsRow (Matrix (x:xs)) = Just (Vector x, Matrix xs)
 
 unconsCol :: Matrix m n a -> Maybe (Vector m a, Matrix m (Add n NegOne) a)
-unconsCol (Matrix []) = Nothing
+unconsCol (Matrix ([]:_)) = Nothing
 unconsCol (Matrix m) = Just (Vector [x | x:_ <- m], Matrix [xs | _:xs <- m])
+
+splitRow :: Matrix m n a -> [Vector n a]
+splitRow m = case unconsRow m of
+    Nothing -> []
+    Just (v, vs) -> v : splitRow vs
+
+splitCol :: Matrix m n a -> [Vector m a]
+splitCol m = case unconsCol m of
+    Nothing -> []
+    Just (v, vs) -> v : splitCol vs
 
 transpose :: Matrix m n a -> Matrix n m a
 transpose mat = case Matrix.unconsRow mat of
@@ -67,3 +77,15 @@ luDecomp a = do
     let Matrix l = comp l00 l0j li0 lij
         Matrix u = comp u00 u0j ui0 uij
     (Matrix l, Matrix u)
+
+qrDecomp :: Matrix m n Float -> (Matrix m m Float, Matrix m n Float) -- m >= n
+qrDecomp a = do
+    let q = transpose $ Matrix [v | Vector v <- orthonormalize [] (splitCol a)]
+    let r = Matrix.mul (transpose q) a
+    (q, r)
+
+orthonormalize :: [Vector m Float] -> [Vector m Float] -> [Vector m Float]
+orthonormalize e [] = e
+orthonormalize e (v:vs) = do
+    let v' = normalize $ v - foldr (+) (Vector.mul v 0) [Vector.mul ei (dot ei v) | ei <- e]
+    orthonormalize (e ++ [v']) vs

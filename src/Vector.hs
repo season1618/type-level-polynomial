@@ -33,3 +33,6 @@ dot (Vector x) (Vector y) = sum $ zipWith (*) x y
 
 norm :: Vector n Float -> Float
 norm x = sqrt $ dot x x
+
+normalize :: Vector n Float -> Vector n Float
+normalize v = Vector.div v (norm v)
