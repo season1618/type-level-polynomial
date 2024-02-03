@@ -42,5 +42,9 @@ type family AddList (x :: [(Symbol, Zahl)]) (y :: [(Symbol, Zahl)]) :: [(Symbol,
 
 type family CmpAddList (c :: Ordering) (x :: [(Symbol, Zahl)]) (y :: [(Symbol, Zahl)]) :: [(Symbol, Zahl)] where
     CmpAddList 'LT (x:xs) (y:ys) = x : AddList xs (y:ys)
-    CmpAddList 'EQ ('(v1, k1) : xs) ('(v2, k2) : ys) = '(v1, AddZahl k1 k2) : AddList xs ys
+    CmpAddList 'EQ ('(v1, k1) : xs) ('(v2, k2) : ys) = ZeroCheckAddList v1 (AddZahl k1 k2) (AddList xs ys)
     CmpAddList 'GT (x:xs) (y:ys) = y : AddList (x:xs) ys
+
+type family ZeroCheckAddList (v :: Symbol) (k :: Zahl) (list :: [(Symbol, Zahl)]) :: [(Symbol, Zahl)] where
+    ZeroCheckAddList v 'Zero list = list
+    ZeroCheckAddList v k list = '(v, k) : list
