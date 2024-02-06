@@ -7,7 +7,14 @@ import TypeLevelPolynomial
 import Vector
 
 data Matrix (n :: Polynomial) (m :: Polynomial) a = Matrix [[a]]
-    deriving (Eq, Show)
+    deriving Eq
+
+instance Show a => Show (Matrix m n a) where
+    show (Matrix m) = "(\n" ++ foldr (++) "" (map showList m) ++ ")" where
+        showList :: Show a => [a] -> String
+        showList [] = "\n"
+        showList [a] = show a ++ "\n"
+        showList (a:as) = show a ++ ", " ++ showList as
 
 id :: Matrix n n Float -> Matrix n n Float
 id (Matrix [[a]]) = Matrix [[1]]

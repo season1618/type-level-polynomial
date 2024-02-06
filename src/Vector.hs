@@ -6,7 +6,14 @@ module Vector where
 import TypeLevelPolynomial
 
 data Vector (n :: Polynomial) a = Vector [a]
-    deriving (Eq, Show)
+    deriving Eq
+
+instance Show a => Show (Vector n a) where
+    show (Vector v) = "(" ++ showList v ++ ")" where
+        showList :: Show a => [a] -> String
+        showList [] = ""
+        showList [a] = show a
+        showList (a:as) = show a ++ ", " ++ showList as
 
 zero :: Vector n Float -> Vector n Float
 zero v = mul v 0
