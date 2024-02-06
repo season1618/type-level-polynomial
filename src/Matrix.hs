@@ -15,7 +15,7 @@ id a = do
     let Just (a0j', aij') = unconsRow a
         Just (a00, a0j) = uncons a0j'
         Just (ai0, aij) = unconsCol aij'
-    let (Matrix x) = comp 1 (Vector.mul a0j 0) (Vector.mul ai0 0) (Matrix.id aij)
+    let (Matrix x) = comp 1 (zero a0j ) (zero ai0 ) (Matrix.id aij)
     Matrix x
 
 rowVector :: Vector n a -> Matrix One n a
@@ -77,11 +77,11 @@ luDecomp a = do
         Just (a00, a0j) = uncons a0j'
         Just (ai0, aij) = unconsCol aij'
     let l00 = a00
-        l0j = Vector.mul a0j 0
+        l0j = zero a0j 
         li0 = ai0
     let u00 = 1
         u0j = Vector.div a0j a00
-        ui0 = Vector.mul ai0 0
+        ui0 = zero ai0
     let (lij, uij) = luDecomp (aij - Matrix.mul (colVector li0) (rowVector u0j))
     let Matrix l = comp l00 l0j li0 lij
         Matrix u = comp u00 u0j ui0 uij
@@ -96,7 +96,7 @@ qrDecomp a = do
 orthonormalize :: [Vector m Float] -> [Vector m Float] -> [Vector m Float]
 orthonormalize e [] = e
 orthonormalize e (v:vs) = do
-    let v' = normalize $ v - foldr (+) (Vector.mul v 0) [Vector.mul ei (dot ei v) | ei <- e]
+    let v' = normalize $ v - foldr (+) (zero v) [Vector.mul ei (dot ei v) | ei <- e]
     orthonormalize (e ++ [v']) vs
 
 eigenDecomp :: Matrix n n Float -> (Matrix n n Float, Matrix n n Float)

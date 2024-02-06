@@ -8,6 +8,9 @@ import TypeLevelPolynomial
 data Vector (n :: Polynomial) a = Vector [a]
     deriving (Eq, Show)
 
+zero :: Vector n Float -> Vector n Float
+zero v = mul v 0
+
 scalar :: a -> Vector One a
 scalar a = Vector [a]
 
