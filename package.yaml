@@ -56,3 +56,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - type-level-polynomial
+    - HUnit

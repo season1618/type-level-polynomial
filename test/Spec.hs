@@ -3,51 +3,34 @@
 import TypeLevelPolynomial
 import Vector as Vec
 import Matrix as Mat
+import Test.HUnit
 
-main :: IO ()
+main :: IO Counts
 main = do
-    let x = Vector [1, 2, 3] :: Vector ('Polynomial '[ '("1", 'Pos 3) ]) Float
-    let Just (_, xs) = Vec.uncons x
-    let y = Vector [4, 5] :: Vector ('Polynomial '[ '("1", 'Pos 2) ]) Float
-    let z = Vector [1, 2, 3, 4, 5] :: Vector ('Polynomial '[ '("1", 'Pos 5)]) Float
-    print $ append x y == z
-    print $ xs + y
+    let v1 = Vector [1, 2, 3] :: Vector ('Polynomial '[ '("1", 'Pos 3) ]) Float
+    let v2 = Vector [4, 5] :: Vector ('Polynomial '[ '("1", 'Pos 2) ]) Float
+    let v3 = Vector [1, 2, 3, 4, 5] :: Vector ('Polynomial '[ '("1", 'Pos 5)]) Float
+    let v4 = Vector [1, 2, 3] :: Vector ('Polynomial '[ '("a", 'Pos 1) ]) Float
+    let v5 = Vector [2, 3, 4] :: Vector ('Polynomial '[ '("b", 'Pos 1) ]) Float
 
-    let x = Vector [1, 2, 3] :: Vector ('Polynomial '[ '("a", 'Pos 1) ]) Float
-    let y = Vector [2, 3, 4] :: Vector ('Polynomial '[ '("b", 'Pos 1) ]) Float
-    let Just (xa, xv) = Vec.uncons x
-    print $ append x y == append y x
-    print $ append (scalar xa) xv == x
-    print $ x + x
-    print $ x - x
-    print $ x `dot` x
-    print $ norm x
+    let vectorTest = TestList [ TestCase $ assertEqual "append" (append v1 v2) v3
+                              , TestCase $ assertEqual "uncons, scalar" (let Just (x, xs) = Vec.uncons v4 in append (scalar x) xs) v4
+                              , TestCase $ assertEqual "sum, product" (v3 + v3 + v3) (Vec.mul v3 3)
+                              , TestCase $ assertEqual "dot" (dot v4 v4) 14
+                              ]
+    runTestTT vectorTest
 
-    let a = Matrix [[1, 2, 3], [2, 3, 4]] :: Matrix ('Polynomial '[ '("a", 'Pos 1) ]) ('Polynomial '[ '("b", 'Pos 1) ]) Float
-    let b = Matrix [[1, 2], [2, 3], [3, 4]] :: Matrix ('Polynomial '[ '("b", 'Pos 1) ]) ('Polynomial '[ '("a", 'Pos 1) ]) Float
-    let Just (av, am) = Mat.unconsRow a
-    print $ y == av
-    print $ Mat.mul am b
-    print $ appendRow a a
-    print $ appendCol a a
-    print $ transpose a == b
-    print $ a + a
-    print $ b + b
-    print $ Mat.mul a b
-    print $ Mat.mul b a
+    let m1 = Matrix [[1, 2, 3], [2, 3, 4]] :: Matrix ('Polynomial '[ '("a", 'Pos 1) ]) ('Polynomial '[ '("b", 'Pos 1) ]) Float
+    let m2 = transpose m1
+    let m3 = Matrix [ [8, 16, 24, 32], [2,  7, 12, 17], [6, 17, 32, 59], [7, 22, 46, 105] ] :: Matrix ('Polynomial '[ '("n", 'Pos 1) ]) ('Polynomial '[ '("n", 'Pos 1) ]) Float
 
-    let a = Matrix [ [8, 16, 24, 32], [2,  7, 12, 17], [6, 17, 32, 59], [7, 22, 46, 105] ] :: Matrix ('Polynomial '[ '("1", 'Pos 4) ]) ('Polynomial '[ '("1", 'Pos 4) ]) Float
-    let (l, u) = luDecomp a
-    print l
-    print u
-
-    let a = Matrix [ [12, -51, 4], [6, 167, -68], [-4, 24, -41] ] :: Matrix ('Polynomial '[ '("1", 'Pos 3) ]) ('Polynomial '[ '("1", 'Pos 3) ]) Float
-    let (q, r) = qrDecomp a
-    print q
-    print r
-
-    let a = Matrix [ [5, 1, 2], [2, 2, 1], [3, 4, 5] ] :: Matrix ('Polynomial '[ '("1", 'Pos 2) ]) ('Polynomial '[ '("1", 'Pos 2) ]) Float
-    let (d, p) = eigenDecomp a
-    print d
-    print p
-    print $ Mat.mul (Mat.mul p d) (transpose p)
+    let matrixTest = TestList [ TestCase $ assertEqual "append-row" (appendRow m1 m1) (Matrix [[1, 2, 3], [2, 3, 4], [1, 2, 3], [2, 3, 4]])
+                              , TestCase $ assertEqual "append-col" (appendCol m1 m1) (Matrix [[1, 2, 3, 1, 2, 3], [2, 3, 4, 2, 3, 4]])
+                              , TestCase $ assertEqual "add" (m1 + m1) (Matrix [[2, 4, 6], [4, 6, 8]])
+                              , TestCase $ assertEqual "mul" (Mat.mul m1 m2) (Matrix [[14, 20], [20, 29]])
+                              , TestCase $ assertEqual "mul" (Mat.mul m2 m1) (Matrix [[5, 8, 11], [8, 13, 18], [11, 18, 25]])
+                              , TestCase $ assertEqual "LU decomposition" (let (l, u) = luDecomp m3 in Mat.mul l u) m3
+                              , TestCase $ assertEqual "QR decomposition" (let (q, r) = qrDecomp m3 in Mat.mul q r) m3
+                              , TestCase $ assertEqual "eigen decomposition" (let (d, p) = eigenDecomp m3 in Mat.mul (Mat.mul p d) (transpose p)) m3
+                              ]
+    runTestTT matrixTest
