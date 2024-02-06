@@ -9,6 +9,15 @@ import Vector
 data Matrix (n :: Polynomial) (m :: Polynomial) a = Matrix [[a]]
     deriving (Eq, Show)
 
+id :: Matrix n n Float -> Matrix n n Float
+id (Matrix [[a]]) = Matrix [[1]]
+id a = do
+    let Just (a0j', aij') = unconsRow a
+        Just (a00, a0j) = uncons a0j'
+        Just (ai0, aij) = unconsCol aij'
+    let (Matrix x) = comp 1 (Vector.mul a0j 0) (Vector.mul ai0 0) (Matrix.id aij)
+    Matrix x
+
 rowVector :: Vector n a -> Matrix One n a
 rowVector (Vector v) = Matrix [v]
 
@@ -89,3 +98,10 @@ orthonormalize e [] = e
 orthonormalize e (v:vs) = do
     let v' = normalize $ v - foldr (+) (Vector.mul v 0) [Vector.mul ei (dot ei v) | ei <- e]
     orthonormalize (e ++ [v']) vs
+
+eigenDecomp :: Matrix n n Float -> (Matrix n n Float, Matrix n n Float)
+eigenDecomp a = iterate f (a, Matrix.id a) !! 100 where
+    f :: (Matrix n n Float, Matrix n n Float) -> (Matrix n n Float, Matrix n n Float)
+    f (d, p) = do
+        let (q, r) = qrDecomp d
+        (Matrix.mul r q, Matrix.mul p q)

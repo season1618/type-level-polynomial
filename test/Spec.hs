@@ -45,3 +45,9 @@ main = do
     let (q, r) = qrDecomp a
     print q
     print r
+
+    let a = Matrix [ [5, 1, 2], [2, 2, 1], [3, 4, 5] ] :: Matrix ('Polynomial '[ '("1", 'Pos 2) ]) ('Polynomial '[ '("1", 'Pos 2) ]) Float
+    let (d, p) = eigenDecomp a
+    print d
+    print p
+    print $ Mat.mul (Mat.mul p d) (transpose p)
