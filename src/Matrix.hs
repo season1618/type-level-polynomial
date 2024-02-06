@@ -6,7 +6,7 @@ module Matrix where
 import TypeLevelPolynomial
 import Vector
 
-data Matrix (n :: Polynomial) (m :: Polynomial) a = Matrix [[a]]
+data Matrix (m :: Polynomial) (n :: Polynomial) a = Matrix [[a]]
     deriving Eq
 
 instance Show a => Show (Matrix m n a) where
@@ -17,12 +17,12 @@ instance Show a => Show (Matrix m n a) where
         showList (a:as) = show a ++ ", " ++ showList as
 
 id :: Matrix n n Float -> Matrix n n Float
-id (Matrix [[a]]) = Matrix [[1]]
+id (Matrix [[_]]) = Matrix [[1]]
 id a = do
     let Just (a0j', aij') = unconsRow a
-        Just (a00, a0j) = uncons a0j'
+        Just (_, a0j) = uncons a0j'
         Just (ai0, aij) = unconsCol aij'
-    let (Matrix x) = comp 1 (zero a0j ) (zero ai0 ) (Matrix.id aij)
+    let (Matrix x) = comp 1 (zero a0j) (zero ai0) (Matrix.id aij)
     Matrix x
 
 rowVector :: Vector n a -> Matrix One n a
