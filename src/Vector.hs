@@ -46,3 +46,9 @@ norm v = sqrt $ dot v v
 
 normalize :: Vector n Float -> Vector n Float
 normalize v = Vector.div v (norm v)
+
+orthonormalize :: [Vector m Float] -> [Vector m Float] -> [Vector m Float]
+orthonormalize e [] = e
+orthonormalize e (v:vs) = do
+    let v' = normalize $ v - foldr (+) (zero v) [Vector.mul ei (dot ei v) | ei <- e]
+    orthonormalize (e ++ [v']) vs

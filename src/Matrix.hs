@@ -100,12 +100,6 @@ qrDecomp a = do
     let r = Matrix.mul (transpose q) a
     (q, r)
 
-orthonormalize :: [Vector m Float] -> [Vector m Float] -> [Vector m Float]
-orthonormalize e [] = e
-orthonormalize e (v:vs) = do
-    let v' = normalize $ v - foldr (+) (zero v) [Vector.mul ei (dot ei v) | ei <- e]
-    orthonormalize (e ++ [v']) vs
-
 eigenDecomp :: Matrix n n Float -> (Matrix n n Float, Matrix n n Float)
 eigenDecomp a = iterate f (a, Matrix.id a) !! 100 where
     f :: (Matrix n n Float, Matrix n n Float) -> (Matrix n n Float, Matrix n n Float)
