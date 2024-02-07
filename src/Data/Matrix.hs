@@ -1,10 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 module Data.Matrix where
 
-import Prelude as P
 import TypeLevelPolynomial
 import Data.Vector as Vec
 
