@@ -26,6 +26,7 @@ library
   exposed-modules:
       Data.Matrix
       Data.Vector
+      ML.LinearRegression
       TypeLevelPolynomial
   other-modules:
       Paths_type_level_polynomial
