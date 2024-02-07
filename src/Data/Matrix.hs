@@ -1,8 +1,10 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Data.Matrix where
 
+import Prelude as P
 import TypeLevelPolynomial
 import Data.Vector as Vec
 
@@ -16,13 +18,13 @@ instance Show a => Show (Matrix m n a) where
         showList [a] = show a ++ "\n"
         showList (a:as) = show a ++ ", " ++ showList as
 
-id :: Matrix n n Float -> Matrix n n Float
-id (Matrix [[_]]) = Matrix [[1]]
-id a = do
+ident :: Matrix n n Float -> Matrix n n Float
+ident (Matrix [[_]]) = Matrix [[1]]
+ident a = do
     let Just (a0j', aij') = unconsRow a
         Just (_, a0j) = uncons a0j'
         Just (ai0, aij) = unconsCol aij'
-    let (Matrix x) = comp 1 (zero a0j) (zero ai0) (Data.Matrix.id aij)
+    let (Matrix x) = comp 1 (zero a0j) (zero ai0) (ident aij)
     Matrix x
 
 rowVector :: Vector n a -> Matrix One n a
@@ -72,7 +74,7 @@ splitCol m = case unconsCol m of
     Just (v, vs) -> v : splitCol vs
 
 transpose :: Matrix m n a -> Matrix n m a
-transpose mat = case Data.Matrix.unconsRow mat of
+transpose a = case unconsRow a of
     Nothing -> Matrix (repeat [])
     Just (v, m) ->
         let Matrix v' = colVector v
@@ -82,7 +84,7 @@ transpose mat = case Data.Matrix.unconsRow mat of
 inverse :: Matrix n n Float -> Matrix n n Float
 inverse m = do
     let (l, u) = luDecomp m
-        i = Data.Matrix.id m
+        i = ident m
     concatCol [inverseU u (inverseL l b) | b <- splitCol i] where
         inverseL :: Matrix n n Float -> Vector n Float -> Vector n Float -- Lx = b
         inverseL (Matrix [[l00]]) (Vector [v0]) = Vector [v0 / l00]
@@ -146,7 +148,7 @@ qrDecomp a = do
     (q, r)
 
 eigenDecomp :: Matrix n n Float -> (Matrix n n Float, Matrix n n Float)
-eigenDecomp a = iterate f (a, Data.Matrix.id a) !! 100 where
+eigenDecomp a = iterate f (a, ident a) !! 100 where
     f :: (Matrix n n Float, Matrix n n Float) -> (Matrix n n Float, Matrix n n Float)
     f (d, p) = do
         let (q, r) = qrDecomp d

@@ -33,7 +33,7 @@ main = do
                               , TestCase $ assertEqual "add" (m1 + m1) (Matrix [[2, 4, 6], [4, 6, 8]])
                               , TestCase $ assertEqual "mul" (Mat.mul m1 m2) (Matrix [[14, 20], [20, 29]])
                               , TestCase $ assertEqual "mul" (Mat.mul m2 m1) (Matrix [[5, 8, 11], [8, 13, 18], [11, 18, 25]])
-                              , TestCase $ assertEqual "inverse" (let inv = inverse m3 in Mat.mul m3 inv) (Mat.id m3)
+                              , TestCase $ assertEqual "inverse" (let inv = inverse m3 in Mat.mul m3 inv) (Mat.ident m3)
                               , TestCase $ assertEqual "LU decomposition" (let (l, u) = luDecomp m3 in Mat.mul l u) m3
                               , TestCase $ assertEqual "QR decomposition" (let (q, r) = qrDecomp m3 in Mat.mul q r) m3
                               , TestCase $ assertEqual "eigen decomposition" (let (d, p) = eigenDecomp m3 in Mat.mul (Mat.mul p d) (transpose p)) m3
