@@ -36,13 +36,13 @@ mul :: Num a => Vector n a -> a -> Vector n a
 mul (Vector v) a = Vector (map (* a) v)
 
 div :: Fractional a => Vector n a -> a -> Vector n a
-div (Vector v) a = Vector (map (\x -> x / a) v)
+div (Vector v) a = Vector (map (/ a) v)
 
 dot :: Num a => Vector n a -> Vector n a -> a
 dot (Vector x) (Vector y) = sum $ zipWith (*) x y
 
 norm :: Vector n Float -> Float
-norm x = sqrt $ dot x x
+norm v = sqrt $ dot v v
 
 normalize :: Vector n Float -> Vector n Float
 normalize v = Vector.div v (norm v)
