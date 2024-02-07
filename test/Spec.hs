@@ -9,7 +9,7 @@ type A = 'Polynomial '[ '("a", 'Pos 1) ]
 type B = 'Polynomial '[ '("b", 'Pos 1) ]
 type N = 'Polynomial '[ '("n", 'Pos 1) ]
 
-main :: IO Counts
+main :: IO ()
 main = do
     let v1 = Vector [1, 2, 3] :: Vector ('Polynomial '[ '("1", 'Pos 3) ]) Float
     let v2 = Vector [4, 5] :: Vector ('Polynomial '[ '("1", 'Pos 2) ]) Float
@@ -38,3 +38,15 @@ main = do
                               , TestCase $ assertEqual "eigen decomposition" (let (d, p) = eigenDecomp m3 in Mat.mul (Mat.mul p d) (transpose p)) m3
                               ]
     runTestTT matrixTest
+
+    let (l, u) = luDecomp m3
+    putStrLn $ "L = " ++ show l
+    putStrLn $ "U = " ++ show u
+
+    let (q, r) = qrDecomp m3
+    putStrLn $ "Q = " ++ show q
+    putStrLn $ "R = " ++ show r
+
+    let (d, p) = eigenDecomp m3
+    putStrLn $ "D = " ++ show d
+    putStrLn $ "P = " ++ show p
