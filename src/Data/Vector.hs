@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE KindSignatures #-}
 
-module Vector where
+module Data.Vector where
 
 import TypeLevelPolynomial
 
@@ -45,10 +45,10 @@ norm :: Vector n Float -> Float
 norm v = sqrt $ dot v v
 
 normalize :: Vector n Float -> Vector n Float
-normalize v = Vector.div v (norm v)
+normalize v = Data.Vector.div v (norm v)
 
 orthonormalize :: [Vector m Float] -> [Vector m Float] -> [Vector m Float]
 orthonormalize e [] = e
 orthonormalize e (v:vs) = do
-    let v' = normalize $ v - foldr (+) (zero v) [Vector.mul ei (dot ei v) | ei <- e]
+    let v' = normalize $ v - foldr (+) (zero v) [Data.Vector.mul ei (dot ei v) | ei <- e]
     orthonormalize (e ++ [v']) vs

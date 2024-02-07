@@ -24,9 +24,9 @@ source-repository head
 
 library
   exposed-modules:
-      Matrix
+      Data.Matrix
+      Data.Vector
       TypeLevelPolynomial
-      Vector
   other-modules:
       Paths_type_level_polynomial
   autogen-modules:

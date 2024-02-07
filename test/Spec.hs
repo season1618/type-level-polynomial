@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 
 import TypeLevelPolynomial
-import Vector as Vec
-import Matrix as Mat
+import Data.Vector as Vec
+import Data.Matrix as Mat
 import Test.HUnit
 
 type A = 'Polynomial '[ '("a", 'Pos 1) ]

@@ -1,10 +1,10 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE KindSignatures #-}
 
-module Matrix where
+module Data.Matrix where
 
 import TypeLevelPolynomial
-import Vector
+import Data.Vector as Vec
 
 data Matrix (m :: Polynomial) (n :: Polynomial) a = Matrix [[a]]
     deriving Eq
@@ -22,7 +22,7 @@ id a = do
     let Just (a0j', aij') = unconsRow a
         Just (_, a0j) = uncons a0j'
         Just (ai0, aij) = unconsCol aij'
-    let (Matrix x) = comp 1 (zero a0j) (zero ai0) (Matrix.id aij)
+    let (Matrix x) = comp 1 (zero a0j) (zero ai0) (Data.Matrix.id aij)
     Matrix x
 
 rowVector :: Vector n a -> Matrix One n a
@@ -56,7 +56,7 @@ splitCol m = case unconsCol m of
     Just (v, vs) -> v : splitCol vs
 
 transpose :: Matrix m n a -> Matrix n m a
-transpose mat = case Matrix.unconsRow mat of
+transpose mat = case Data.Matrix.unconsRow mat of
     Nothing -> Matrix (repeat [])
     Just (v, m) ->
         let Matrix v' = colVector v
@@ -87,9 +87,9 @@ luDecomp a = do
         l0j = zero a0j 
         li0 = ai0
     let u00 = 1
-        u0j = Vector.div a0j a00
+        u0j = Vec.div a0j a00
         ui0 = zero ai0
-    let (lij, uij) = luDecomp (aij - Matrix.mul (colVector li0) (rowVector u0j))
+    let (lij, uij) = luDecomp (aij - Data.Matrix.mul (colVector li0) (rowVector u0j))
     let Matrix l = comp l00 l0j li0 lij
         Matrix u = comp u00 u0j ui0 uij
     (Matrix l, Matrix u)
@@ -97,12 +97,12 @@ luDecomp a = do
 qrDecomp :: Matrix m n Float -> (Matrix m m Float, Matrix m n Float) -- m >= n
 qrDecomp a = do
     let q = transpose $ Matrix [v | Vector v <- orthonormalize [] (splitCol a)]
-    let r = Matrix.mul (transpose q) a
+    let r = Data.Matrix.mul (transpose q) a
     (q, r)
 
 eigenDecomp :: Matrix n n Float -> (Matrix n n Float, Matrix n n Float)
-eigenDecomp a = iterate f (a, Matrix.id a) !! 100 where
+eigenDecomp a = iterate f (a, Data.Matrix.id a) !! 100 where
     f :: (Matrix n n Float, Matrix n n Float) -> (Matrix n n Float, Matrix n n Float)
     f (d, p) = do
         let (q, r) = qrDecomp d
-        (Matrix.mul r q, Matrix.mul p q)
+        (Data.Matrix.mul r q, Data.Matrix.mul p q)
