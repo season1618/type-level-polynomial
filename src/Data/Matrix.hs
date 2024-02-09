@@ -88,14 +88,14 @@ inverse m = do
         inverseL (Matrix [[l00]]) (Vector [v0]) = Vector [v0 / l00]
         inverseL l b = do
             let Just (l00, _, li0, lij) = decomp l
-                Just (b0, bi) = uncons b
+                Just (b0, bi) = uncons2 b
             let Vector x = cons (b0 / l00) (inverseL lij (bi - li0 `Vec.mul` (b0 / l00)))
             Vector x
         inverseU :: Matrix n n Float -> Vector n Float -> Vector n Float -- Ux = b
         inverseU (Matrix [[_]]) (Vector [v0]) = Vector [v0]
         inverseU u b = do
             let Just (_, u0j, _, uij) = decomp u
-                Just (b0, bi) = uncons b
+                Just (b0, bi) = uncons2 b
             let xi = inverseU uij bi
             let Vector x = cons (b0 - dot u0j xi) xi
             Vector x
@@ -111,13 +111,13 @@ mul (Matrix x) (Matrix y) = Matrix [mulVecMat xi y | xi <- x] where
         sumVec :: Num a => [[a]] -> [a]
         sumVec = foldr (zipWith (+)) (repeat (fromInteger 0))
 
-decomp :: Matrix m n a -> Maybe (a, Vector (Add n NegOne) a, Vector (Add m NegOne) a, Matrix (Add m NegOne) (Add n NegOne) a)
+decomp :: Matrix m n a -> Maybe (a, Vector ('Prev n) a, Vector ('Prev m) a, Matrix ('Prev m) ('Prev n) a)
 decomp m = case unconsRow m of
     Nothing -> Nothing
     Just (mi0', mij') -> do
-        let Just (m00, m0j) = uncons mi0'
-            Just (mi0, mij) = unconsCol mij'
-        Just (m00, m0j, mi0, mij)
+        let Just (m00, Vector m0j) = uncons mi0'
+            Just (Vector mi0, Matrix mij) = unconsCol mij'
+        Just (m00, Vector m0j, Vector mi0, Matrix mij)
 
 comp :: a -> Vector n a -> Vector m a -> Matrix m n a -> Matrix (Add One m) (Add One n) a
 comp a00 a0j ai0 aij = appendRow (rowVector (append (scalar a00) a0j)) (appendCol (colVector ai0) aij)

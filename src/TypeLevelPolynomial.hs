@@ -7,7 +7,7 @@
 
 module TypeLevelPolynomial (
     Zahl(Pos, Zero, Neg),
-    Polynomial(Polynomial),
+    Polynomial(Polynomial, Prev),
     One,
     NegOne,
     Add,
@@ -33,6 +33,7 @@ type family CmpAddZahl (c :: Ordering) (x :: Nat) (y :: Nat) :: Zahl where
     CmpAddZahl 'GT x y = 'Pos (x - y)
 
 data Polynomial = Polynomial [(Symbol, Zahl)]
+                | Prev Polynomial
 
 type One = 'Polynomial '[ '("1", 'Pos 1) ]
 type NegOne = 'Polynomial '[ '("1", 'Neg 1) ]

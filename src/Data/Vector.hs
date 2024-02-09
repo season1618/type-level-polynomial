@@ -24,12 +24,16 @@ scalar a = Vector [a]
 append :: Vector m a -> Vector n a -> Vector (Add m n) a
 append (Vector x) (Vector y) = Vector (x ++ y)
 
-cons :: a -> Vector n a -> Vector (Add n One) a
+cons :: a -> Vector ('Prev n) a -> Vector n a
 cons a (Vector v) = Vector (a:v)
 
 uncons :: Vector n a -> Maybe (a, Vector (Add n NegOne) a)
 uncons (Vector []) = Nothing
 uncons (Vector (x:xs)) = Just (x, Vector xs)
+
+uncons2 :: Vector n a -> Maybe (a, Vector ('Prev n) a)
+uncons2 (Vector []) = Nothing
+uncons2 (Vector (x:xs)) = Just (x, Vector xs)
 
 instance Num a => Num (Vector n a) where
     (+) (Vector x) (Vector y) = Vector (zipWith (+) x y)
