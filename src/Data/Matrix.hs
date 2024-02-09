@@ -122,9 +122,7 @@ comp a00 a0j ai0 aij = consRow (cons a00 a0j) (consCol ai0 aij)
 luDecomp :: Matrix n n Float -> (Matrix n n Float, Matrix n n Float)
 luDecomp (Matrix [[a]]) = (Matrix [[a]], Matrix [[1]])
 luDecomp a = do
-    let Just (a0j', aij') = unconsRow a
-        Just (a00, a0j) = uncons a0j'
-        Just (ai0, aij) = unconsCol aij'
+    let Just (a00, a0j, ai0, aij) = decomp a
     let l00 = a00
         l0j = zero a0j 
         li0 = ai0
@@ -132,9 +130,9 @@ luDecomp a = do
         u0j = Vec.div a0j a00
         ui0 = zero ai0
     let (lij, uij) = luDecomp (aij - Data.Matrix.mul (colVector li0) (rowVector u0j))
-    let Matrix l = comp l00 l0j li0 lij
-        Matrix u = comp u00 u0j ui0 uij
-    (Matrix l, Matrix u)
+    let l = comp l00 l0j li0 lij
+        u = comp u00 u0j ui0 uij
+    (l, u)
 
 qrDecomp :: Matrix m n Float -> (Matrix m m Float, Matrix m n Float) -- m >= n
 qrDecomp a = do
