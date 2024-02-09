@@ -18,7 +18,6 @@ main = do
     let v5 = Vector [2, 3, 4] :: Vector B Float
 
     let vectorTest = TestList [ TestCase $ assertEqual "append" (append v1 v2) v3
-                              , TestCase $ assertEqual "uncons, scalar" (let Just (x, xs) = Vec.uncons v4 in append (scalar x) xs) v4
                               , TestCase $ assertEqual "sum, product" (v3 + v3 + v3) (Vec.mul v3 3)
                               , TestCase $ assertEqual "dot" (dot v4 v4) 14
                               ]

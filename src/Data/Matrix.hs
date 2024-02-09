@@ -19,11 +19,8 @@ instance Show a => Show (Matrix m n a) where
 ident :: Matrix n n Float -> Matrix n n Float
 ident (Matrix [[_]]) = Matrix [[1]]
 ident a = do
-    let Just (a0j', aij') = unconsRow a
-        Just (_, a0j) = uncons2 a0j'
-        Just (ai0, aij) = unconsCol aij'
-    let (Matrix x) = comp 1 (zero a0j) (zero ai0) (ident aij)
-    Matrix x
+    let Just (_, a0j, ai0, aij) = decomp a
+    comp 1 (zero a0j) (zero ai0) (ident aij)
 
 rowVector :: Vector n a -> Matrix One n a
 rowVector (Vector v) = Matrix [v]
@@ -91,13 +88,13 @@ inverse m = do
         inverseL (Matrix [[l00]]) (Vector [v0]) = Vector [v0 / l00]
         inverseL l b = do
             let Just (l00, _, li0, lij) = decomp l
-                Just (b0, bi) = uncons2 b
+                Just (b0, bi) = uncons b
             cons (b0 / l00) (inverseL lij (bi - li0 `Vec.mul` (b0 / l00)))
         inverseU :: Matrix n n Float -> Vector n Float -> Vector n Float -- Ux = b
         inverseU (Matrix [[_]]) (Vector [v0]) = Vector [v0]
         inverseU u b = do
             let Just (_, u0j, _, uij) = decomp u
-                Just (b0, bi) = uncons2 b
+                Just (b0, bi) = uncons b
             let xi = inverseU uij bi
             cons (b0 - dot u0j xi) xi
 
@@ -113,12 +110,11 @@ mul (Matrix x) (Matrix y) = Matrix [mulVecMat xi y | xi <- x] where
         sumVec = foldr (zipWith (+)) (repeat (fromInteger 0))
 
 decomp :: Matrix m n a -> Maybe (a, Vector ('Prev n) a, Vector ('Prev m) a, Matrix ('Prev m) ('Prev n) a)
-decomp m = case unconsRow m of
-    Nothing -> Nothing
-    Just (mi0', mij') -> do
-        let Just (m00, Vector m0j) = uncons mi0'
-            Just (Vector mi0, Matrix mij) = unconsCol mij'
-        Just (m00, Vector m0j, Vector mi0, Matrix mij)
+decomp m = do
+    let Just (mi0', mij') = unconsRow m
+        Just (m00, m0j) = uncons mi0'
+        Just (mi0, mij) = unconsCol mij'
+    Just (m00, m0j, mi0, mij)
 
 comp :: a -> Vector ('Prev n) a -> Vector ('Prev m) a -> Matrix ('Prev m) ('Prev n) a -> Matrix m n a
 comp a00 a0j ai0 aij = consRow (cons a00 a0j) (consCol ai0 aij)
@@ -127,7 +123,7 @@ luDecomp :: Matrix n n Float -> (Matrix n n Float, Matrix n n Float)
 luDecomp (Matrix [[a]]) = (Matrix [[a]], Matrix [[1]])
 luDecomp a = do
     let Just (a0j', aij') = unconsRow a
-        Just (a00, a0j) = uncons2 a0j'
+        Just (a00, a0j) = uncons a0j'
         Just (ai0, aij) = unconsCol aij'
     let l00 = a00
         l0j = zero a0j 
