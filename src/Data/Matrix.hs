@@ -20,7 +20,7 @@ ident :: Matrix n n Float -> Matrix n n Float
 ident (Matrix [[_]]) = Matrix [[1]]
 ident a = do
     let Just (a0j', aij') = unconsRow a
-        Just (_, a0j) = uncons a0j'
+        Just (_, a0j) = uncons2 a0j'
         Just (ai0, aij) = unconsCol aij'
     let (Matrix x) = comp 1 (zero a0j) (zero ai0) (ident aij)
     Matrix x
@@ -37,11 +37,17 @@ appendRow (Matrix x) (Matrix y) = Matrix (x ++ y)
 appendCol :: Matrix m n1 a -> Matrix m n2 a -> Matrix m (Add n1 n2) a
 appendCol (Matrix x) (Matrix y) = Matrix [xi ++ yi | (xi, yi) <- zip x y]
 
-unconsRow :: Matrix m n a -> Maybe (Vector n a, Matrix (Add m NegOne) n a)
+consRow :: Vector n a -> Matrix ('Prev m) n a -> Matrix m n a
+consRow (Vector v) (Matrix m) = Matrix (v:m)
+
+consCol :: Vector m a -> Matrix m ('Prev n) a -> Matrix m n a
+consCol (Vector v) (Matrix m) = Matrix [vi:mi | (vi, mi) <- zip v m]
+
+unconsRow :: Matrix m n a -> Maybe (Vector n a, Matrix ('Prev m) n a)
 unconsRow (Matrix []) = Nothing
 unconsRow (Matrix (x:xs)) = Just (Vector x, Matrix xs)
 
-unconsCol :: Matrix m n a -> Maybe (Vector m a, Matrix m (Add n NegOne) a)
+unconsCol :: Matrix m n a -> Maybe (Vector m a, Matrix m ('Prev n) a)
 unconsCol (Matrix ([]:_)) = Nothing
 unconsCol (Matrix m) = Just (Vector [x | x:_ <- m], Matrix [xs | _:xs <- m])
 
@@ -74,10 +80,7 @@ splitCol m = case unconsCol m of
 transpose :: Matrix m n a -> Matrix n m a
 transpose a = case unconsRow a of
     Nothing -> Matrix (repeat [])
-    Just (v, m) ->
-        let Matrix v' = colVector v
-            Matrix m' = transpose m
-        in Matrix [vi ++ mi | (vi, mi) <- zip v' m']
+    Just (v, m) -> consCol v (transpose m)
 
 inverse :: Matrix n n Float -> Matrix n n Float
 inverse m = do
@@ -89,16 +92,14 @@ inverse m = do
         inverseL l b = do
             let Just (l00, _, li0, lij) = decomp l
                 Just (b0, bi) = uncons2 b
-            let Vector x = cons (b0 / l00) (inverseL lij (bi - li0 `Vec.mul` (b0 / l00)))
-            Vector x
+            cons (b0 / l00) (inverseL lij (bi - li0 `Vec.mul` (b0 / l00)))
         inverseU :: Matrix n n Float -> Vector n Float -> Vector n Float -- Ux = b
         inverseU (Matrix [[_]]) (Vector [v0]) = Vector [v0]
         inverseU u b = do
             let Just (_, u0j, _, uij) = decomp u
                 Just (b0, bi) = uncons2 b
             let xi = inverseU uij bi
-            let Vector x = cons (b0 - dot u0j xi) xi
-            Vector x
+            cons (b0 - dot u0j xi) xi
 
 instance Num a => Num (Matrix m n a) where
     (+) (Matrix x) (Matrix y) = Matrix (zipWith (zipWith (+)) x y)
@@ -119,14 +120,14 @@ decomp m = case unconsRow m of
             Just (Vector mi0, Matrix mij) = unconsCol mij'
         Just (m00, Vector m0j, Vector mi0, Matrix mij)
 
-comp :: a -> Vector n a -> Vector m a -> Matrix m n a -> Matrix (Add One m) (Add One n) a
-comp a00 a0j ai0 aij = appendRow (rowVector (append (scalar a00) a0j)) (appendCol (colVector ai0) aij)
+comp :: a -> Vector ('Prev n) a -> Vector ('Prev m) a -> Matrix ('Prev m) ('Prev n) a -> Matrix m n a
+comp a00 a0j ai0 aij = consRow (cons a00 a0j) (consCol ai0 aij)
 
 luDecomp :: Matrix n n Float -> (Matrix n n Float, Matrix n n Float)
 luDecomp (Matrix [[a]]) = (Matrix [[a]], Matrix [[1]])
 luDecomp a = do
     let Just (a0j', aij') = unconsRow a
-        Just (a00, a0j) = uncons a0j'
+        Just (a00, a0j) = uncons2 a0j'
         Just (ai0, aij) = unconsCol aij'
     let l00 = a00
         l0j = zero a0j 
